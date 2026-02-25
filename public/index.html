@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Bán Hàng - Project 4</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Menu QLBH</h2>
+        <ul>
+            <li onclick="showSection('khachhang')">1. Quản lý Khách Hàng (C2, C5, C8)</li>
+            <li onclick="showSection('danhmuchang')">2. Danh mục Hàng Hóa (C2, C7)</li>
+            <li onclick="showSection('hoadon')">3. Hóa Đơn & Tìm Kiếm (C4, C6)</li>
+            <li onclick="showSection('hethong')">4. Hệ Thống (C9)</li>
+        </ul>
+        <div class="date-info" id="current-date"></div>
+    </div>
+
+    <div class="main-content">
+        <section id="khachhang" class="content-section">
+            <h2>Quản Lý Khách Hàng</h2>
+            <div class="form-group">
+                <input type="text" id="makh" placeholder="Mã KH">
+                <input type="text" id="holot" placeholder="Họ lót">
+                <input type="text" id="tenkh" placeholder="Tên KH">
+                <select id="phai">
+                    <option value="1">Nam</option>
+                    <option value="0">Nữ</option>
+                </select>
+                <input type="text" id="diachi_kh" placeholder="Địa chỉ">
+                <input type="text" id="dienthoai_kh" placeholder="Điện thoại">
+                <button onclick="saveCustomer()" class="btn-add">Thêm Khách Hàng</button>
+            </div>
+
+            <button onclick="loadKhachHang()" style="margin-bottom: 10px;">Tải danh sách (C5)</button>
+
+            <table id="tableKhachHang">
+                <thead>
+                    <tr>
+                        <th>Mã KH</th>
+                        <th>Họ Tên</th>
+                        <th>Giới tính</th>
+                        <th>Địa chỉ</th>
+                        <th>Điện thoại</th>
+                        <th>Tổng tiền mua</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="danhmuchang" class="content-section" style="display:none;">
+            <h2>Danh Mục Hàng Hóa</h2>
+            <div class="filter-box" style="margin-bottom: 20px; padding: 15px; background: #e9ecef;">
+                <label><strong>Câu 7: Lọc theo Nhà Cung Cấp:</strong></label>
+                <select id="filter_mancc_select" onchange="filterByNCC()">
+                </select>
+            </div>
+            <table id="tableHangHoa">
+                <thead>
+                    <tr>
+                        <th>Mã Hàng</th>
+                        <th>Tên Hàng</th>
+                        <th>Mã NCC</th>
+                        <th>ĐVT</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="hoadon" class="content-section" style="display:none;">
+            <h2>Tìm Kiếm & Thống Kê</h2>
+            <div class="search-box">
+                <label>Câu 4: Tìm kiếm khách hàng/hóa đơn:</label>
+                <input type="text" id="search_invoice" placeholder="Nhập mã hoặc tên...">
+                <button onclick="searchInvoice()">Tìm Kiếm</button>
+            </div>
+            <br>
+            <div class="stat-box">
+                <label>Câu 6: Thống kê theo năm (Quý):</label>
+                <input type="number" id="stat_year" value="2024">
+                <button onclick="reportByQuarter()">Xem báo cáo</button>
+            </div>
+
+            <table id="tableHoaDon">
+                <thead>
+                    <tr>
+                        <th>Mã HĐ</th>
+                        <th>Ngày HĐ</th>
+                        <th id="soluong">Số lượng</th>
+                        <th>Tổng Tiền</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="hethong" class="content-section" style="display:none;">
+            <h2>Quản Trị Hệ Thống (Câu 9)</h2>
+            <div class="form-group">
+                <input type="text" id="new_user" placeholder="Tên đăng nhập">
+                <input type="password" id="new_pass" placeholder="Mật khẩu">
+                <select id="new_role">
+                    <option value="ADMIN">Admin</option>
+                    <option value="GIAOVIEN">Giáo viên</option>
+                    <option value="HOCSINH">Học sinh</option>
+                </select>
+                <button onclick="createUser()">Tạo tài khoản</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
