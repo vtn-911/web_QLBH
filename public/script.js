@@ -141,7 +141,7 @@ async function filterByNCC() {
     const tbody = document.querySelector('#tableHangHoa tbody');
     tbody.innerHTML = '';
     data.forEach(h => {
-        tbody.innerHTML += `<tr><td>${h.MAHANG}</td><td>${h.TENHANG}</td><td>${h.MANCC}</td><td>${h.DVT}</td><td><button>Sửa</button></td></tr>`;
+        tbody.innerHTML += `<tr><td>${h.MAHANG}</td><td>${h.TENHANG}</td><td>${h.DVT}</td></tr>`;
     });
 }
 
