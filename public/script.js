@@ -275,7 +275,7 @@ async function reportByQuarter() {
                     <td>Quý ${item.Quy}</td>
                     <td>Năm ${nam}</td>
                     <td>Số lượng: ${item.SoLuongHD}</td>
-                    <td class="money">Tổng tiền: ${item.TongTien ? item.TongTien.toLocaleString() : 0} VNĐ</td>
+                    <td class="money">${item.TongTien ? item.TongTien.toLocaleString() : 0} VNĐ</td>
                  </tr>
                 `;
             tbody.appendChild(tr);
