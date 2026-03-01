@@ -1,11 +1,65 @@
 const API_URL = `${window.location.origin}/api`;
 
 document.addEventListener('DOMContentLoaded', () => {
-    displayCurrentDate(); 
-    loadKhachHang();      
-    loadNCCForSelect();   
+    const role = localStorage.getItem('userRole');
+    if (role) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('user-header').style.display = 'block';
+
+        displayCurrentDate();
+        loadKhachHang();
+        loadNCCForSelect();
+        applyPermissions();
+    } else {
+        console.log("Chưa đăng nhập");
+    }
 });
 
+async function handleLogin() {
+    const user = document.getElementById('login_user').value;
+    const pass = document.getElementById('login_pass').value;
+    const msg = document.getElementById('login_msg');
+
+    if (!user || !pass) {
+        msg.innerText = "Vui lòng nhập đầy đủ!";
+        return;
+    }
+    try {
+        const res = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            localStorage.setItem('userRole', data.role);
+            localStorage.setItem('userName', data.ten);
+            location.reload(); 
+        } else {
+            msg.innerText = data.message || "Tài khoản hoặc mật khẩu sai!";
+        }
+    } catch (err) {
+        msg.innerText = "Lỗi kết nối Server!";
+    }
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload();
+}
+
+function applyPermissions() {
+    const role = localStorage.getItem('userRole');
+    if (role && role !== 'ADMIN') {
+        const formKH = document.querySelector('#khachhang .form-group');
+        if (formKH) formKH.style.display = 'none';
+        const sidebarItems = document.querySelectorAll('.sidebar ul li');
+        if (sidebarItems[3]) sidebarItems[3].style.display = 'none';
+        const actionHeader = document.querySelector('#tableKhachHang thead th:last-child');
+        if (actionHeader) actionHeader.style.display = 'none';
+    }
+}
 
 function showSection(id) {
     document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
@@ -22,8 +76,18 @@ async function loadKhachHang() {
     const res = await fetch(`${API_URL}/khachhang`);
     const data = await res.json();
     const tbody = document.querySelector('#tableKhachHang tbody');
+    const role = localStorage.getItem('userRole'); // Lấy role
+    
     tbody.innerHTML = '';
     data.forEach(kh => {
+        let actionButtons = ``;
+        if (role === 'ADMIN') {
+            actionButtons = `
+                <td>
+                    <button onclick="editCustomer('${kh.MAKH}', '${kh.HOLOT}', '${kh.TENKH}', '${kh.GioiTinh}', '${kh.DIACHI}', '${kh.DIENTHOAI}')">Sửa</button>
+                    <button onclick="deleteCustomer('${kh.MAKH}')">Xóa</button>
+                </td>`;
+        }
         tbody.innerHTML += `
             <tr>
                 <td>${kh.MAKH}</td>
@@ -32,10 +96,7 @@ async function loadKhachHang() {
                 <td>${kh.DIACHI}</td>
                 <td>${kh.DIENTHOAI}</td>
                 <td>${kh.TongTien?.toLocaleString()} VNĐ</td>
-                <td>
-                    <button onclick="editCustomer('${kh.MAKH}', '${kh.HOLOT}', '${kh.TENKH}', '${kh.GioiTinh}', '${kh.DIACHI}', '${kh.DIENTHOAI}')">Sửa</button>
-                    <button onclick="deleteCustomer('${kh.MAKH}')">Xóa</button>
-                </td>
+                ${actionButtons}
             </tr>`;
     });
 }
@@ -56,7 +117,7 @@ function editCustomer(makh, holot, tenkh, phai, diachi, dienthoai) {
 
 
 async function updateCustomer(event) {
-    if (event) event.preventDefault(); 
+    if (event) event.preventDefault();
 
     const makh = document.getElementById('makh').value;
     const customer = {
@@ -97,7 +158,7 @@ function resetForm() {
 
     const btn = document.querySelector('.btn-add');
     btn.innerText = "Lưu Khách Hàng";
-    btn.onclick = saveCustomer; 
+    btn.onclick = saveCustomer;
 }
 async function saveCustomer() {
     const customer = {

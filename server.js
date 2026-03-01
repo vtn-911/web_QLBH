@@ -24,6 +24,32 @@ app.get('/', (req, res) => {
 app.use(cors());
 app.use(express.json());
 
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        let pool = await sql.connect(config);
+        let result = await pool.request()
+            .input('username', sql.NVarChar, username)
+            .input('password', sql.NVarChar, password)
+            .query(`
+                SELECT * 
+                FROM NGUOIDUNG 
+                WHERE TenND = @username AND MatKhau = @password
+            `); 
+
+        if (result.recordset.length === 0) {
+            return res.status(401).json({ success: false, message: "Sai tài khoản hoặc mật khẩu!" });
+        }
+        const user = result.recordset[0];
+        res.json({
+            success: true,
+            ten: user.TenND,
+            role: user.Quyen
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 app.get('/api/khachhang', async (req, res) => {
     try {
